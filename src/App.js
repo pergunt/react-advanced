@@ -6,6 +6,8 @@ import {Provider} from 'react-redux';
 import store, {history} from './redux';
 import {ConnectedRouter} from 'connected-react-router';
 
+import './config';
+
 function App() {
   return (
     <Provider store={store}>

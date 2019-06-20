@@ -17,5 +17,5 @@ const store = initialState => {
   );
 };
 
-export default store({});
+export default store();
 
