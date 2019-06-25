@@ -2,7 +2,7 @@ import React from 'react';
 
 import SignInForm from '../auth/SignInForm';
 import SignUpForm from '../auth/SignUpForm';
-import Loader from '../Loader'
+import Loader from '../common/Loader'
 
 import {NavLink, Switch, Route} from 'react-router-dom';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {reduxForm, Field} from 'redux-form';
-import ErrorField from './ErrorField'
+import ErrorField from '../common/ErrorField'
 
 /**
  * @returns {*}

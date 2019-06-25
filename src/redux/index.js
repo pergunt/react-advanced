@@ -3,19 +3,21 @@ import createRootReducer from './reducer';
 import {routerMiddleware} from 'connected-react-router';
 import {createBrowserHistory} from 'history';
 import logger from 'redux-logger';
-import thunk from 'redux-thunk';
+import createSagaMiddleware from 'redux-saga'
+import saga from './saga';
 
 export const history = createBrowserHistory();
+const sagaMiddleware = createSagaMiddleware();
 
-const store = initialState => {
-  return createStore(
-    createRootReducer(history),
-    initialState,
-    compose(
-      applyMiddleware(routerMiddleware(history), thunk, logger)
-    )
-  );
-};
+const store = createStore(
+  createRootReducer(history),
+  compose(
+    applyMiddleware(sagaMiddleware, routerMiddleware(history), logger)
+  )
+);
+window.store = store;
 
-export default store();
+sagaMiddleware.run(saga);
+
+export default store;
 
