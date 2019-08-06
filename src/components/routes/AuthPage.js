@@ -7,10 +7,12 @@ import Loader from '../common/Loader'
 import {NavLink, Switch, Route} from 'react-router-dom';
 
 import {connect} from 'react-redux';
-import {signUp, moduleName} from '../../ducks/auth'
+import {signUp, signIn, moduleName} from '../../ducks/auth'
 
 /**
  * @param {Function} signUp
+ * @param {Function} signIn
+ * @param {Object} user
  * @param {Boolean} loading
  * @returns {*}
  * @constructor
@@ -18,11 +20,13 @@ import {signUp, moduleName} from '../../ducks/auth'
 const AuthPage = (
   {
     signUp,
+    signIn,
+    user,
     loading
   }
 ) => {
 
-  const onSignInSubmit = (values) => console.log(values);
+  const onSignInSubmit = ({email, password}) => signIn(email, password);
   const onSignUpSubmit = ({email, password}) => signUp(email, password);
 
   return (
@@ -35,7 +39,7 @@ const AuthPage = (
         Sign Up
       </NavLink>
       <Switch>
-        <Route path='/auth/signin' render={() => <SignInForm onSubmit={onSignInSubmit} />} />
+        <Route path='/auth/signin' render={() => <SignInForm user={user} onSubmit={onSignInSubmit} />} />
         <Route path='/auth/signup' render={() => <SignUpForm onSubmit={onSignUpSubmit} />} />
       </Switch>
       <Loader loading={loading}/>
@@ -43,7 +47,12 @@ const AuthPage = (
   );
 };
 export default connect(state => {
+  const {
+    loading,
+    user
+  } = state[moduleName];
   return {
-    loading: state[moduleName].loading
+    loading,
+    user
   }
-}, {signUp})(AuthPage);
+}, {signUp, signIn})(AuthPage);

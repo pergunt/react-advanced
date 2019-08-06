@@ -26,6 +26,7 @@ export const SIGN_UP_ERROR = `${appName}/${moduleName}/SIGN_UP_ERROR`;
 export const SIGN_OUT_REQUEST = `${appName}/${moduleName}/SIGN_OUT_REQUEST`;
 export const SIGN_OUT_SUCCESS = `${appName}/${moduleName}/SIGN_OUT_SUCCESS`;
 
+export const SIGN_IN_REQUEST = `${appName}/${moduleName}/SIGN_IN_REQUEST`;
 export const SIGN_IN_SUCCESS = `${appName}/${moduleName}/SIGN_IN_SUCCESS`;
 
 export default (state = new ReducerRecord(), action) => {
@@ -67,6 +68,17 @@ export function signUp(email, password) {
     payload: {email, password}
   };
 }
+/**
+ * @param {string} email
+ * @param {string} password
+ * @returns {{type: string, payload: {email: *, password: *}}}
+ */
+export function signIn(email, password) {
+  return {
+    type: SIGN_IN_REQUEST,
+    payload: {email, password}
+  };
+}
 
 /**
  * @returns {{type: string}}
@@ -83,10 +95,10 @@ export function * signUpSaga() {
   const auth = firebase.auth();
 
   while (true) {
-    const action = yield take(SIGN_UP_REQUEST);
+    const {payload} = yield take(SIGN_UP_REQUEST);
     try {
       const user = yield call(
-        [auth, auth.createUserWithEmailAndPassword], action.payload.email, action.payload.password
+        [auth, auth.createUserWithEmailAndPassword], payload.email, payload.password
       );
       yield put({
         type: SIGN_UP_SUCCESS,
@@ -100,6 +112,27 @@ export function * signUpSaga() {
     }
   }
 }
+
+export function * signInSaga() {
+  const auth = firebase.auth();
+
+  while (true) {
+    const {payload} = yield take(SIGN_IN_REQUEST);
+
+    try {
+      const user = yield call(
+        [auth, auth.signInWithEmailAndPassword], payload.email, payload.password
+      );
+      yield put({
+        type: SIGN_IN_SUCCESS,
+        payload: user
+      })
+    } catch (e) {
+      alert(e.message)
+    }
+  }
+}
+
 export function * watchStatusChange() {
   const auth = firebase.auth();
 
@@ -128,10 +161,14 @@ export function * signOutSaga() {
     alert(e.message)
   }
 }
+/**
+ * @returns {IterableIterator<AllEffect<any>>}
+ */
 export function * saga() {
   yield all([
     signUpSaga(),
     watchStatusChange(),
-    takeEvery(SIGN_OUT_REQUEST, signOutSaga)
+    takeEvery(SIGN_OUT_REQUEST, signOutSaga),
+    signInSaga()
   ]);
 }

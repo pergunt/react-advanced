@@ -3,7 +3,10 @@ import {
   ADD_PERSON_REQUEST,
   ADD_PERSON
 } from './people';
-import {call, put} from 'redux-saga/effects'
+import {
+  call,
+  put
+} from 'redux-saga/effects'
 import {generateId} from './utils';
 
 it('should dispatch a person with id', () => {

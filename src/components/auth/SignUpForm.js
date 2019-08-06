@@ -28,7 +28,7 @@ const SignUpForm = (
   );
 };
 
-const validate = ({email, password}) => {
+export const validate = ({email, password}) => {
   const errors = {};
 
   if (!email) errors.email = 'email is required';

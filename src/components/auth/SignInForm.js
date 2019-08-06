@@ -1,17 +1,27 @@
-import React from 'react';
+import React, {
+  useEffect
+} from 'react';
 
 import {reduxForm, Field} from 'redux-form';
 import ErrorField from '../common/ErrorField'
 
+import {validate} from './SignUpForm';
+
 /**
+ * @param {Function} handleSubmit
+ * @param {Object|null} user
+ * @param {Function} reset
  * @returns {*}
  * @constructor
  */
 const SignInForm = (
   {
-    handleSubmit
+    handleSubmit,
+    user,
+    reset
   }
 ) => {
+  useEffect(() => reset, [user]);
   return (
     <div>
       <h2>Sign In</h2>
@@ -28,4 +38,5 @@ const SignInForm = (
 
 export default reduxForm({
   form: 'auth',
+  validate
 })(SignInForm);
