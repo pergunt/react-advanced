@@ -5,6 +5,7 @@ import {Route, Switch, Link} from 'react-router-dom';
 import AdminPage from './routes/AdminPage';
 import AuthPage from './routes/AuthPage';
 import PersonPage from './routes/PersonPage';
+import EventsPage from './routes/EventsPage';
 import ProtectedRoute from './common/ProtectedRoute';
 
 import {connect} from 'react-redux';
@@ -27,8 +28,9 @@ const Root = ({signOut, signedIn}) => {
       {button}
       <Switch>
         <ProtectedRoute path='/admin' component={AdminPage} />
+        <ProtectedRoute path='/people' component={PersonPage} />
+        <ProtectedRoute path='/events' component={EventsPage} />
         <Route path='/auth' component={AuthPage} />
-        <Route path='/people' component={PersonPage} />
       </Switch>
     </div>
   );

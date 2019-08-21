@@ -7,6 +7,7 @@ import store, {history} from './redux';
 import {ConnectedRouter} from 'connected-react-router';
 
 import './config';
+import './mocks/index';
 
 function App() {
   return (
