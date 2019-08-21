@@ -1,5 +1,8 @@
 import {appName} from '../config';
 
+import {createSelector} from 'reselect';
+import {fireBaseDataToEntities} from './utils';
+
 import {
   Record,
   OrderedMap
@@ -19,6 +22,16 @@ const ReducerRecord = Record({
   loading: false,
 });
 
+export const EventRecord = Record({
+  uid: null,
+  title: null,
+  url: null,
+  where: null,
+  when: null,
+  month: null,
+  submissionDeadline: null,
+});
+
 export const moduleName = 'events';
 
 export const FETCH_ALL_REQUEST = `${appName}/${moduleName}/FETCH_ALL_REQUEST`;
@@ -36,11 +49,20 @@ export default (state = new ReducerRecord(), action) => {
     case FETCH_ALL_SUCCESS:
       return state
         .set('loading', false)
-        .set('entities', new OrderedMap(payload));
+        .set('entities', fireBaseDataToEntities(payload, EventRecord));
     default:
       return state;
   }
 }
+
+/**
+ * Selectors
+ */
+export const stateSelector = state => state[moduleName];
+export const entitiesSelector = createSelector(stateSelector, state => state.entities);
+export const eventListSelector = createSelector(entitiesSelector, entities => {
+  return entities.valueSeq().toArray();
+});
 
 /**
  * @returns {{type: string}}

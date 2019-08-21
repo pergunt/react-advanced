@@ -1,28 +1,33 @@
-import React, {
-  useEffect
-} from 'react';
+import React from 'react';
 
-import {connect} from 'react-redux';
-import {moduleName, fetchAll} from '../../ducks/events';
+/**
+ * @param {Array} events
+ * @returns {*}
+ */
+function getRows(events) {
+  return events.map( ({uid, title, where, month}) => (
+    <tr key={uid}>
+      <td>{title}</td>
+      <td>{where}</td>
+      <td>{month}</td>
+    </tr>
+  ))
+}
 
 const EventList = (
   {
-    fetchAll,
     events,
   }
 ) => {
-  useEffect(() => {
-    fetchAll();
-  }, []);
-  console.log(events);
+
   return (
     <div>
-      EventList
+      <table>
+        <tbody>
+          {getRows(events)}
+        </tbody>
+      </table>
     </div>
   );
 };
-export default connect(state => {
-  return {
-    events: state[moduleName].entities
-  };
-}, {fetchAll})(EventList);
+export default EventList

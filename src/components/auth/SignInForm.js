@@ -21,7 +21,11 @@ const SignInForm = (
     reset
   }
 ) => {
-  useEffect(() => reset, [user]);
+  useEffect(() => {
+    reset();
+    return reset;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   return (
     <div>
       <h2>Sign In</h2>
