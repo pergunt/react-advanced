@@ -1,36 +1,50 @@
-import React, {
-  useEffect
-} from 'react';
+import React from 'react';
 
-import EventList from '../events/EventList'
+import VirtualizedEventList from '../events/VirtualizedEventList'
 import Loader from '../common/Loader'
 
 import {connect} from 'react-redux';
-import {eventListSelector, fetchAll, moduleName} from '../../ducks/events';
+import {
+  eventListSelector,
+  fetchLazy,
+  selectEvent,
+  moduleName
+} from '../../ducks/events';
 
 const EventsPage = (
   {
-    fetchAll,
+    fetchLazy,
     loading,
-    events
+    loaded,
+    events,
+    selectEvent
   }
 ) => {
-
-  useEffect(() => {
-    fetchAll();
-  }, [fetchAll]);
 
   return (
     <div>
       <h2>Events Page</h2>
+      <VirtualizedEventList
+        events={events}
+        fetchLazy={fetchLazy}
+        selectEvent={selectEvent}
+        loaded={loaded}
+      />
       <Loader loading={loading} />
-      <EventList events={events} />
     </div>
   );
 };
 export default connect(state => {
+  const {
+    loading,
+    loaded
+  } = state[moduleName];
   return {
     events: eventListSelector(state),
-    loading: state[moduleName].loading
+    loading,
+    loaded
   };
-}, {fetchAll})(EventsPage);
+}, {
+  fetchLazy,
+  selectEvent
+})(EventsPage);

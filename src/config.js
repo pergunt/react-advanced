@@ -1,5 +1,8 @@
 import firebase from 'firebase'
 
+import Enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
 export const appName = 'react-advanced-79384';
 
 export const firebaseConfig = {
@@ -12,4 +15,5 @@ export const firebaseConfig = {
     appId: "1:351736361152:web:c3401d5a3b4fcada"
 };
 
+Enzyme.configure({adapter: new Adapter()});
 firebase.initializeApp(firebaseConfig);
