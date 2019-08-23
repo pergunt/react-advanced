@@ -1,23 +1,49 @@
-import React from 'react';
+import React, {
+  useEffect
+} from 'react';
 
 import {connect} from 'react-redux';
-import {addPerson} from '../../ducks/people'
+import {
+  addPerson,
+  fetchPeople,
+  peopleListSelector
+} from '../../ducks/people'
 
 import PersonForm from '../people/PersonForm'
+import VirtualizedPersonList from '../people/VirtualizedPersonList'
 
 /**
- * @param addPerson
+ * @param {Function} addPerson
+ * @param {Function} fetchPeople
+ * @param {Array} people
  * @returns {*}
  * @constructor
  */
-const PersonPage = ({addPerson}) => {
+const PersonPage = (
+  {
+    addPerson,
+    fetchPeople,
+    people
+  }
+) => {
+
+  useEffect(() => {
+    fetchPeople();
+  }, [fetchPeople]);
+
   const onSubmit = ({email, firstName, lastName}) => addPerson({firstName, lastName, email});
+
   return (
     <div>
       <h1>PersonPage</h1>
       <PersonForm onSubmit={onSubmit} />
+      <VirtualizedPersonList people={people} />
     </div>
   );
 };
 
-export default connect(null, {addPerson})(PersonPage)
+export default connect(state => {
+  return {
+    people: peopleListSelector(state)
+  }
+}, {addPerson, fetchPeople})(PersonPage)
