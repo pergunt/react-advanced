@@ -21,7 +21,7 @@ import {createSelector} from 'reselect';
 
 const ReducerRecord = Record({
   entities: new List([]),
-  people: new OrderedMap({})
+  loading: false
 });
 const PersonRecord = Record({
   firstName: null,
@@ -31,8 +31,8 @@ const PersonRecord = Record({
 });
 
 export const moduleName = 'people';
-export const ADD_PERSON = `${appName}/${moduleName}/ADD_PERSON`;
 export const ADD_PERSON_REQUEST = `${appName}/${moduleName}/ADD_PERSON_REQUEST`;
+export const ADD_PERSON_SUCCESS = `${appName}/${moduleName}/ADD_PERSON_SUCCESS`;
 export const FETCH_PEOPLE_REQUEST = `${appName}/${moduleName}/FETCH_PEOPLE_REQUEST`;
 export const FETCH_PEOPLE_SUCCESS = `${appName}/${moduleName}/FETCH_PEOPLE_SUCCESS`;
 
@@ -43,10 +43,17 @@ export default (state = new ReducerRecord(), action) => {
   } = action;
 
   switch (type) {
-    case ADD_PERSON:
-      return state.update('entities', entities => entities.push(new PersonRecord(payload)));
+    case ADD_PERSON_REQUEST:
+      return state.set('loading', true);
+
+    case ADD_PERSON_SUCCESS:
+      const person = new PersonRecord(payload);
+      return state
+        .setIn(['entities', person.uid], person)
+        .set('loading', false);
+
     case FETCH_PEOPLE_SUCCESS:
-      return state.set('people', fireBaseDataToEntities(payload, PersonRecord));
+      return state.set('entities', fireBaseDataToEntities(payload, PersonRecord));
     default:
       return state;
   }
@@ -56,9 +63,9 @@ export default (state = new ReducerRecord(), action) => {
  * Selectors
  */
 export const stateSelector = state => state[moduleName];
-export const peopleSelector = createSelector(stateSelector, state => state.people);
-export const peopleListSelector = createSelector(peopleSelector, people => {
-  return people.valueSeq().toArray();
+export const peopleSelector = createSelector(stateSelector, state => state.entities);
+export const peopleListSelector = createSelector(peopleSelector, entities => {
+  return entities.valueSeq().toArray();
 });
 
 /**
@@ -92,7 +99,8 @@ export function * fetchPeopleSaga() {
       yield put({
         type: FETCH_PEOPLE_SUCCESS,
         payload: data.val()
-      })
+      });
+
     } catch (e) {
       alert(e.message);
     }
@@ -109,13 +117,14 @@ export function * addPersonSaga(action) {
   } catch (e) {
     alert(e.message);
   }
-
+  const person = {
+    ...action.payload, uid
+  };
   yield put({
-    type: ADD_PERSON,
-    payload: {
-      ...action.payload, uid
-    }
+    type: ADD_PERSON_SUCCESS,
+    payload: person
   });
+
 }
 export const saga = function * () {
   yield all([

@@ -3,6 +3,8 @@ import React, {useEffect} from 'react';
 import {Table, Column, InfiniteLoader} from 'react-virtualized';
 
 import 'react-virtualized/styles.css';
+import {eventListSelector, fetchLazy, moduleName, selectEvent} from "../../ducks/events";
+import {connect} from "react-redux";
 
 /**
  * @param {Array} events
@@ -77,4 +79,12 @@ const TableEventList = (
     </InfiniteLoader>
   );
 };
-export default TableEventList
+export default connect(state => {
+  return {
+    events: eventListSelector(state),
+    loaded: state[moduleName].loaded
+  };
+}, {
+  fetchLazy,
+  selectEvent
+})(TableEventList);

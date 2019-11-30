@@ -6,7 +6,6 @@ import {connect} from 'react-redux';
 import {
   addPerson,
   fetchPeople,
-  peopleListSelector
 } from '../../ducks/people'
 
 import PersonForm from '../people/PersonForm'
@@ -14,22 +13,14 @@ import VirtualizedPersonList from '../people/VirtualizedPersonList'
 
 /**
  * @param {Function} addPerson
- * @param {Function} fetchPeople
- * @param {Array} people
  * @returns {*}
  * @constructor
  */
 const PersonPage = (
   {
     addPerson,
-    fetchPeople,
-    people
   }
 ) => {
-
-  useEffect(() => {
-    fetchPeople();
-  }, [fetchPeople]);
 
   const onSubmit = ({email, firstName, lastName}) => addPerson({firstName, lastName, email});
 
@@ -37,13 +28,9 @@ const PersonPage = (
     <div>
       <h1>PersonPage</h1>
       <PersonForm onSubmit={onSubmit} />
-      <VirtualizedPersonList people={people} />
+      <VirtualizedPersonList />
     </div>
   );
 };
 
-export default connect(state => {
-  return {
-    people: peopleListSelector(state)
-  }
-}, {addPerson, fetchPeople})(PersonPage)
+export default connect(null, {addPerson})(PersonPage)

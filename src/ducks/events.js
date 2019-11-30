@@ -84,6 +84,10 @@ export const entitiesSelector = createSelector(stateSelector, state => state.ent
 export const eventListSelector = createSelector(entitiesSelector, entities => {
   return entities.valueSeq().toArray();
 });
+export const sectionSelector = createSelector(stateSelector, state => state.selected);
+export const selectedEventsSelector = createSelector(entitiesSelector, sectionSelector, (entities, selection) => {
+  return selection.toArray().map( id => entities.get(id));
+});
 
 /**
  * @returns {{type: string}}
