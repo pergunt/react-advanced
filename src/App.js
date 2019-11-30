@@ -9,11 +9,16 @@ import {ConnectedRouter} from 'connected-react-router';
 import './config';
 import './mocks/index';
 
+import {DndProvider} from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend'
+
 function App() {
   return (
     <Provider store={store}>
       <ConnectedRouter history={history}>
-        <Root/>
+        <DndProvider backend={HTML5Backend}>
+          <Root/>
+        </DndProvider>
       </ConnectedRouter>
     </Provider>
   );

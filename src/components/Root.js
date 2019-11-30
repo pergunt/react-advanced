@@ -11,6 +11,7 @@ import ProtectedRoute from './common/ProtectedRoute';
 import {connect} from 'react-redux';
 import {moduleName, signOut} from '../ducks/auth';
 
+
 /**
  * @returns {*}
  * @constructor
