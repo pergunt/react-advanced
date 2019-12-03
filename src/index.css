@@ -17,3 +17,7 @@ code {
 .error {
   color: #ff0000;
 }
+.canDrop,
+.isDragging {
+  transition: .3s;
+}

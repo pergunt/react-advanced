@@ -11,6 +11,7 @@ import ProtectedRoute from './common/ProtectedRoute';
 import {connect} from 'react-redux';
 import {moduleName, signOut} from '../ducks/auth';
 
+import CustomDragLayer from './CustomDragLayer';
 
 /**
  * @returns {*}
@@ -33,6 +34,7 @@ const Root = ({signOut, signedIn}) => {
         <ProtectedRoute path='/events' component={EventsPage} />
         <Route path='/auth' component={AuthPage} />
       </Switch>
+      <CustomDragLayer />
     </div>
   );
 }
