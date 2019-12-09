@@ -1,15 +1,19 @@
-import React from 'react';
+import React, {
+  useEffect
+} from 'react';
 
 import {useDrag} from 'react-dnd';
+import {getEmptyImage} from 'react-dnd-html5-backend';
 
-const collect = (monitor) => {
+
+const collect = (monitor, connect) => {
   return {
-    isDragging: monitor.isDragging()
+    isDragging: monitor.isDragging(),
   }
 };
 
 const PersonCard = ({style, person}) => {
-  const [{isDragging}, drag] = useDrag({
+  const [{isDragging}, drag, preview] = useDrag({
     item: {
       type: 'person'
     },
@@ -20,7 +24,9 @@ const PersonCard = ({style, person}) => {
     },
     collect
   });
-
+  useEffect(() => {
+    preview(getEmptyImage())
+  }, []);
   const {
     firstName,
     lastName,

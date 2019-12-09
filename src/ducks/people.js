@@ -19,6 +19,7 @@ import {generateId} from './utils';
 import firebase from 'firebase';
 import {fireBaseDataToEntities} from './utils';
 import {createSelector} from 'reselect';
+import {entitiesSelector} from "./events";
 
 const ReducerRecord = Record({
   entities: new List([]),
@@ -72,8 +73,12 @@ export default (state = new ReducerRecord(), action) => {
  */
 export const stateSelector = state => state[moduleName];
 export const peopleSelector = createSelector(stateSelector, state => state.entities);
+export const idSelector = (_, props) => props.personUid;
 export const peopleListSelector = createSelector(peopleSelector, entities => {
   return entities.valueSeq().toArray();
+});
+export const personSelector = createSelector(peopleSelector, idSelector, (entities, id) => {
+  return entities.get(id);
 });
 
 /**

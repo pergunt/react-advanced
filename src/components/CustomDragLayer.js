@@ -2,6 +2,8 @@ import React from 'react';
 
 import {useDragLayer} from 'react-dnd';
 
+import PersonCardDragPreview from './people/PersonCardDragPreview'
+
 const laterStyle = {
   position: 'fixed',
   pointerEvents: 'none',
@@ -15,12 +17,18 @@ const laterStyle = {
 const collect = (monitor) => {
   return {
     isDragging: monitor.isDragging(),
-    offset: monitor.getSourceClientOffset()
+    offset: monitor.getSourceClientOffset(),
+    item: monitor.getItem(),
+    itemType: monitor.getItemType()
   };
 };
 
+const previewMap = {
+  person: PersonCardDragPreview
+}
+
 const CustomDragLayer = () => {
-  const {isDragging, offset} = useDragLayer(collect);
+  const {isDragging, offset, item, itemType} = useDragLayer(collect);
   if (!isDragging) {
     return null;
   }
@@ -29,11 +37,14 @@ const CustomDragLayer = () => {
     const style = {
       transform: `translate(${x}px, ${y}px)`
     };
-    return <div style={style}>Hello DragLayer</div>;
+    const PreviewComponent = previewMap[itemType];
+    return PreviewComponent ? <div style={style}><PreviewComponent {...item} /></div> : null;
   };
+  const layerItem = getItem();
+  if (!layerItem) return null;
   return (
     <div style={laterStyle}>
-      ${getItem()}
+      ${layerItem}
     </div>
   );
 };
