@@ -28,13 +28,18 @@ const Root = ({signOut, signedIn}) => {
     <div>
       Root
       {button}
+      <ul>
+        <li><Link to='/admin'>Admin</Link></li>
+        <li><Link to='/people'>People</Link></li>
+        <li><Link to='/events'>Events</Link></li>
+      </ul>
+      <CustomDragLayer />
       <Switch>
         <ProtectedRoute path='/admin' component={AdminPage} />
         <ProtectedRoute path='/people' component={PersonPage} />
         <ProtectedRoute path='/events' component={EventsPage} />
         <Route path='/auth' component={AuthPage} />
       </Switch>
-      <CustomDragLayer />
     </div>
   );
 }

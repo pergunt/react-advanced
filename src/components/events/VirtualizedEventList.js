@@ -6,6 +6,8 @@ import 'react-virtualized/styles.css';
 import {eventListSelector, fetchLazy, moduleName, selectEvent} from "../../ducks/events";
 import {connect} from "react-redux";
 
+import TableRow from './TableRow';
+
 /**
  * @param {Array} events
  * @param {Function} fetchAll
@@ -37,6 +39,7 @@ const TableEventList = (
     console.log('load -more');
     fetchLazy();
   };
+  const rowRenderer = (props) => <TableRow {...props} />;
 
   return (
     <InfiniteLoader
@@ -57,6 +60,7 @@ const TableEventList = (
             headerHeight={70}
             overscanRowCount={5}
             onRowClick={onRowClick}
+            rowRenderer={rowRenderer}
           >
             <Column
               dataKey='title'

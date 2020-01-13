@@ -17,6 +17,9 @@ code {
 .error {
   color: #ff0000;
 }
+h1 {
+  margin: 0;
+}
 .canDrop,
 .isDragging {
   transition: .3s;

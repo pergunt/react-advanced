@@ -3,6 +3,7 @@ import React from 'react';
 import {useDragLayer} from 'react-dnd';
 
 import PersonCardDragPreview from './people/PersonCardDragPreview'
+import EventDragPreview from './events/EventDragPreview'
 
 const laterStyle = {
   position: 'fixed',
@@ -24,8 +25,9 @@ const collect = (monitor) => {
 };
 
 const previewMap = {
-  person: PersonCardDragPreview
-}
+  person: PersonCardDragPreview,
+  event: EventDragPreview
+};
 
 const CustomDragLayer = () => {
   const {isDragging, offset, item, itemType} = useDragLayer(collect);

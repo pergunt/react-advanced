@@ -42,7 +42,7 @@ const AuthPage = (
         <Route path='/auth/signin' render={() => <SignInForm user={user} onSubmit={onSignInSubmit} />} />
         <Route path='/auth/signup' render={() => <SignUpForm onSubmit={onSignUpSubmit} />} />
       </Switch>
-      <Loader loading={loading}/>
+      {loading && <Loader />}
     </div>
   );
 };

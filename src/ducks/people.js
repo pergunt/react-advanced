@@ -8,10 +8,12 @@ import {
 import {
   put,
   call,
-  take,
+  fork,
+  spawn,
   all,
   takeEvery,
-  select
+  select,
+  delay
 } from 'redux-saga/effects';
 
 import {generateId} from './utils';
@@ -19,7 +21,7 @@ import {generateId} from './utils';
 import firebase from 'firebase';
 import {fireBaseDataToEntities} from './utils';
 import {createSelector} from 'reselect';
-import {entitiesSelector} from "./events";
+import {entitiesSelector, fetchAllSaga} from "./events";
 
 const ReducerRecord = Record({
   entities: new List([]),
@@ -102,21 +104,16 @@ export function fetchPeople() {
 }
 
 export function * fetchPeopleSaga() {
-  while (true) {
-    yield take(FETCH_PEOPLE_REQUEST);
+  try {
+    const ref = firebase.database().ref('/people');
+    const data = yield call([ref, ref.once], 'value');
 
-    try {
-      const ref = firebase.database().ref('/people');
-      const data = yield call([ref, ref.once], 'value');
-
-      yield put({
-        type: FETCH_PEOPLE_SUCCESS,
-        payload: data.val()
-      });
-
-    } catch (e) {
-      alert(e.message);
-    }
+    yield put({
+      type: FETCH_PEOPLE_SUCCESS,
+      payload: data.val()
+    });
+  } catch (e) {
+    alert(e.message);
   }
 }
 
@@ -167,10 +164,21 @@ export function * addEventSaga(action) {
   }
 }
 
+export function * backgroundSyncSaga() {
+  while (true) {
+    yield call(fetchPeopleSaga);
+    yield delay(4000);
+  }
+}
+
 export const saga = function * () {
+  // run the saga in background (effect fork) - attached to the root saga
+  // effect "spawn" is like "fork" but detached to the root saga so if there an error occurs - the app will continue to work
+  yield spawn(backgroundSyncSaga);
+
   yield all([
     takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
     takeEvery(ADD_EVENT_REQUEST, addEventSaga),
-    fetchPeopleSaga(),
+    takeEvery(FETCH_PEOPLE_REQUEST, fetchPeopleSaga),
   ])
 };

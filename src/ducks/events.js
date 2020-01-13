@@ -44,6 +44,8 @@ export const SELECT_EVENT = `${appName}/${moduleName}/SELECT_EVENT`;
 export const FETCH_LAZY_REQUEST = `${appName}/${moduleName}/FETCH_LAZY_REQUEST`;
 export const FETCH_LAZY_SUCCESS = `${appName}/${moduleName}/FETCH_LAZY_SUCCESS`;
 export const FETCH_LAZY_START = `${appName}/${moduleName}/FETCH_LAZY_START`;
+export const DELETE_EVENT_REQUEST = `${appName}/${moduleName}/DELETE_EVENT_REQUEST`;
+export const DELETE_EVENT_SUCCESS = `${appName}/${moduleName}/DELETE_EVENT_SUCCESS`;
 
 export default (state = new ReducerRecord(), action) => {
   const {
@@ -62,6 +64,14 @@ export default (state = new ReducerRecord(), action) => {
       return state
         .update('selected', selected => selected[state.selected.contains(payload) ? 'remove' : 'add'](payload));
 
+    case DELETE_EVENT_REQUEST:
+      return state.set('loading', true);
+
+    case DELETE_EVENT_SUCCESS:
+      return state
+        .deleteIn(['entities', payload])
+        .deleteIn(['selected', payload])
+        .set('loading', false);
 
     case FETCH_LAZY_START:
       return state.set('loading', true);
@@ -112,6 +122,14 @@ export function selectEvent(uid) {
     payload: uid
   }
 }
+
+export function deleteEvent(eventUid) {
+  return {
+    type: DELETE_EVENT_REQUEST,
+    payload: eventUid
+  };
+}
+
 export function * fetchLazySaga() {
   while (true) {
     yield take(FETCH_LAZY_REQUEST);
@@ -156,12 +174,30 @@ export function * fetchAllSaga() {
   }
 }
 
+export function * deleteEventSaga() {
+  while (true) {
+    const {payload} = yield take(DELETE_EVENT_REQUEST);
+    const ref = firebase.database().ref(`/events/${payload}`);
+
+    try {
+      yield call([ref, ref.remove]);
+      yield put({
+        type: DELETE_EVENT_SUCCESS,
+        payload
+      })
+    } catch (e) {
+      alert(e.message);
+    }
+  }
+}
+
 /**
  * @returns {IterableIterator<AllEffect<any>>}
  */
 export function * saga() {
   yield all([
     fetchAllSaga(),
-    fetchLazySaga()
+    fetchLazySaga(),
+    deleteEventSaga()
   ]);
 }

@@ -15,11 +15,11 @@ import HTML5Backend from 'react-dnd-html5-backend'
 function App() {
   return (
     <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <DndProvider backend={HTML5Backend}>
-          <Root/>
-        </DndProvider>
-      </ConnectedRouter>
+      <DndProvider backend={HTML5Backend}>
+        <ConnectedRouter history={history}>
+            <Root/>
+        </ConnectedRouter>
+      </DndProvider>
     </Provider>
   );
 }
