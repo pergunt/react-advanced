@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {stateSelector, deleteEvent} from '../../ducks/events';
 
 import Loader from '../common/Loader'
+import {Motion, spring, presets} from 'react-motion'
 
 const collect = (monitor) => {
   return {
@@ -30,10 +31,28 @@ function TrashBin({deleteEvent, loading}) {
     position: 'fixed',
   };
   return (
-    <div style={style} ref={drop}>
-      Trash bin
-      {loading && <Loader/>}
-    </div>
+    <Motion
+      defaultStyle={{opacity: 0}}
+      style={{
+        opacity: spring(1,
+          {
+            ...presets.gentle,
+            stiffness: presets.noWobble.stiffness / 20,
+            damping: presets.noWobble.damping * 2,
+          })
+      }}
+    >
+      {
+        interpolatedStyle => {
+          return (
+            <div style={{...style, ...interpolatedStyle}} ref={drop}>
+              Trash bin
+              {loading && <Loader/>}
+            </div>
+          )
+        }
+      }
+    </Motion>
   );
 }
 export default connect(state => {

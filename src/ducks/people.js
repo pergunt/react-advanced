@@ -3,25 +3,27 @@ import {appName} from '../config';
 import {
   Record,
   List,
-  OrderedMap
 } from 'immutable';
 import {
   put,
+  take,
   call,
   fork,
   spawn,
   all,
   takeEvery,
   select,
-  delay
+  delay,
+  cancel,
+  cancelled,
 } from 'redux-saga/effects';
+import {eventChannel} from 'redux-saga'
 
 import {generateId} from './utils';
 
 import firebase from 'firebase';
 import {fireBaseDataToEntities} from './utils';
 import {createSelector} from 'reselect';
-import {entitiesSelector, fetchAllSaga} from "./events";
 
 const ReducerRecord = Record({
   entities: new List([]),
@@ -165,16 +167,47 @@ export function * addEventSaga(action) {
 }
 
 export function * backgroundSyncSaga() {
-  while (true) {
-    yield call(fetchPeopleSaga);
-    yield delay(4000);
+  try {
+    while (true) {
+      yield call(fetchPeopleSaga);
+      yield delay(2000);
+    }
+  } finally {
+    if (yield cancelled()) {
+      console.log('-----', 'cancelled saga')
+    }
+  }
+}
+
+export function * cancellableSync() {
+  const task = yield fork(backgroundSyncSaga);
+  yield delay(3000);
+  yield cancel(task);
+}
+
+const createPeopleSocket = () => eventChannel(emit => {
+  const ref = firebase.database().ref('people');
+  const cb = (data) => emit({data});
+  ref.on('value', cb);
+  return () => ref.off('value', cb);
+});
+
+export function * realtimeSync() {
+  const channel = yield call(createPeopleSocket);
+  while(true) {
+    const {data} = yield take(channel);
+    yield put({
+      type: FETCH_PEOPLE_SUCCESS,
+      payload: data.val()
+    });
+    console.log(data.val())
   }
 }
 
 export const saga = function * () {
   // run the saga in background (effect fork) - attached to the root saga
   // effect "spawn" is like "fork" but detached to the root saga so if there an error occurs - the app will continue to work
-  yield spawn(backgroundSyncSaga);
+  yield spawn(realtimeSync);
 
   yield all([
     takeEvery(ADD_PERSON_REQUEST, addPersonSaga),
