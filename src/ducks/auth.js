@@ -7,8 +7,11 @@ import {
   call,
   put,
   cps,
-  takeEvery
+  takeEvery,
+  spawn
 } from 'redux-saga/effects';
+import {eventChannel} from 'redux-saga';
+
 import {push} from 'connected-react-router';
 
 const ReducerRecord = Record({
@@ -133,18 +136,31 @@ export function * signInSaga() {
   }
 }
 
-export function * watchStatusChange() {
-  const auth = firebase.auth();
+const createAuthChannel = () => eventChannel( emit => {
+  return firebase.auth().onAuthStateChanged(user => {
+    emit({user})
+  });
+});
 
-  try {
-    yield cps([auth, auth.onAuthStateChanged]);
-    console.log('node - style. First argument is an error')
-  } catch (user) {
-    yield put({
-      type: SIGN_IN_SUCCESS,
-      payload: user
-    });
+
+export function * watchStatusChangeSaga() {
+  const channel = yield call(createAuthChannel);
+  while (true) {
+    const {user} = yield take(channel);
+    if (user) {
+      yield put({
+        type: SIGN_IN_SUCCESS,
+        payload: user
+      });
+    } else {
+      yield put({
+        type: SIGN_OUT_SUCCESS,
+        payload: user
+      });
+      yield put(push('/auth/signin'));
+    }
   }
+
 }
 export function * signOutSaga() {
   const auth = firebase.auth();
@@ -165,9 +181,10 @@ export function * signOutSaga() {
  * @returns {IterableIterator<AllEffect<any>>}
  */
 export function * saga() {
+
   yield all([
+    watchStatusChangeSaga(),
     signUpSaga(),
-    watchStatusChange(),
     takeEvery(SIGN_OUT_REQUEST, signOutSaga),
     signInSaga()
   ]);
