@@ -207,7 +207,7 @@ export function * realtimeSync() {
 export const saga = function * () {
   // run the saga in background (effect fork) - attached to the root saga
   // effect "spawn" is like "fork" but detached to the root saga so if there an error occurs - the app will continue to work
-  yield spawn(realtimeSync);
+  // yield spawn(realtimeSync);
 
   yield all([
     takeEvery(ADD_PERSON_REQUEST, addPersonSaga),

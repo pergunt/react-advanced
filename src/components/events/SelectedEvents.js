@@ -37,7 +37,7 @@ function SelectedEvents({events}) {
   });
   return (
     <TransitionMotion
-      styles={getStyles()}
+      styles={getStyles}
       willLeave={willLeave}
       willEnter={willEnter}
     >

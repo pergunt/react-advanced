@@ -9,7 +9,7 @@ import {
 } from '../../ducks/people'
 
 import PersonForm from '../people/PersonForm'
-import VirtualizedPersonList from '../people/VirtualizedPersonList'
+import PeopleTable from '../people/PeopleTable'
 
 /**
  * @param {Function} addPerson
@@ -28,7 +28,7 @@ const PersonPage = (
     <div>
       <h1>PersonPage</h1>
       <PersonForm onSubmit={onSubmit} />
-      <VirtualizedPersonList />
+      <PeopleTable />
     </div>
   );
 };
